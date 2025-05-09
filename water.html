@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Water Flow with Rich Gradient</title>
+  <style>
+    html, body {
+      margin: 0; padding: 0; overflow: hidden; height: 100%;
+      background: #111; cursor: crosshair;
+    }
+
+    .water {
+      position: fixed; bottom: 0; left: 0;
+      width: 100%; height: 0;
+      background: linear-gradient(
+        to top,
+        #001f3f 0%,
+        #004466 40%,
+        #008899 70%,
+        #4dd0e1 100%
+      );
+      transition: height 0.2s ease-out;
+      z-index: 1; overflow: hidden;
+    }
+    .wave {
+      position: absolute; top: 0; width: 200%; height: 100px;
+      background: radial-gradient(
+        circle at 50% 50%,
+        rgba(255,255,255,0.3) 20%,
+        transparent 70%
+      );
+      background-size: 50% 100%; animation: wave 4s linear infinite;
+      opacity: 0.5;
+    }
+    @keyframes wave {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .message {
+      position: absolute;
+      left: 10%; top: 10%;
+      transform: translate(-10%, -10%);
+      color: white; font-size: 24px;
+      font-family: sans-serif; z-index: 2;
+    }
+
+    @keyframes drown {
+      from { transform: translate(-10%,-10%) translateY(0) rotate(0); }
+      to   { transform: translate(-10%,-10%) translateY(20px) rotate(10deg); }
+    }
+    @keyframes spinFlow {
+      from { transform: translate(-10%,-10%) translateY(20px) rotate(10deg); }
+      to   { transform: translate(-10%,-10%) translateY(-100px) rotate(370deg); }
+    }
+    @keyframes exitUp {
+      from { transform: translate(-10%,-10%) translateY(-100px) rotate(370deg); }
+      to   { transform: translate(-10%,-10%) translateY(-200vh) rotate(720deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="message" id="msg">Move your cursor to flood the screen!</div>
+  <div class="water"   id="water">
+    <div class="wave"></div>
+  </div>
+
+  <script>
+    const water = document.getElementById("water");
+    const msg   = document.getElementById("msg");
+    let waterHeight = 0, full = false;
+
+    document.addEventListener("mousemove", () => {
+      if (full) return;
+      waterHeight += 0.5;
+      water.style.height = waterHeight + "%";
+
+      if (waterHeight >= 100) {
+        full = true;
+        msg.innerText = "TOO MUCH, WATER";
+
+        // sink
+        msg.style.animation = "drown 2s ease-in forwards";
+        // spin + drift
+        setTimeout(() => {
+          msg.style.animation = "spinFlow 10s linear forwards";
+        }, 2000);
+        // exit upward
+        setTimeout(() => {
+          msg.style.animation = "exitUp 5s ease-out forwards";
+        }, 12000);
+      }
+    });
+  </script>
+
+</body>
+</html>
